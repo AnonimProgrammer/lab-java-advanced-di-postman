@@ -1,6 +1,7 @@
 package com.ironhack.service;
 
 import com.ironhack.dto.DiscountResponse;
+import com.ironhack.exception.BusinessException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -11,7 +12,11 @@ public class EarlyBirdDiscountService {
         // Bookings made at least 30 days in advance receive a 15% discount
         // Bookings made between 15 and 29 days in advance receive a 10% discount
 
-        long daysInAdvance = ChronoUnit.DAYS.between(eventDate, bookingDate);
+        long daysInAdvance = ChronoUnit.DAYS.between(bookingDate, eventDate);
+
+        if (daysInAdvance < 0) {
+            throw new BusinessException("Booking date cannot be after the event date.");
+        }
         double discountPercentage = getDiscountPercentage(daysInAdvance);
 
         return new DiscountResponse(
